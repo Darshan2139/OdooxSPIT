@@ -78,8 +78,11 @@ def init_db():
             db.session.commit()
             print("Default admin user created: admin@stockmaster.com / admin123")
 
-# Import routes after app is created
-from routes import *
+# Import routes after app is created. Allow scripts (migrations/tests) to
+# import `app` without loading routes by setting environment variable
+# `SKIP_IMPORT_ROUTE=1`.
+if os.environ.get('SKIP_IMPORT_ROUTE', '0') != '1':
+    from routes import *
 
 if __name__ == '__main__':
     init_db()
