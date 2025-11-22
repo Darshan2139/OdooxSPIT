@@ -38,7 +38,7 @@
                 <thead>
                     <tr>
                         <th>Product</th>
-                        <th>Per Unit Cost</th>
+                        <th>Sale Price</th>
                         <th>On Hand</th>
                         <th>Free to Use</th>
                         <th>Status</th>
@@ -50,10 +50,10 @@
                     <tr {% if product.low_stock %}style="background-color: #fff3cd;"{% endif %}>
                         <td style="font-weight: 500;">{{ product.name }}</td>
                         <td>
-                            {% if product.category and product.category.name %}
-                                Rs. 0
+                            {% if product.sale_price is not none %}
+                                Rs. {{ '%.2f'|format(product.sale_price) }}
                             {% else %}
-                                Rs. 0
+                                -
                             {% endif %}
                         </td>
                         <td data-editable="stock" style="cursor: pointer; padding: 1rem; border-radius: 4px; transition: background-color 0.2s;">
@@ -78,6 +78,14 @@
                             <a href="{{ url_for('product_edit', id=product.id) }}" class="btn btn-sm btn-primary">
                                 <i class="bi bi-pencil"></i> Edit
                             </a>
+                            {% if current_user.role == 'inventory_manager' %}
+                            <button class="btn btn-sm btn-outline-secondary btn-edit-price" data-id="{{ product.id }}" style="margin-left: 0.4rem;">
+                                <i class="bi bi-currency-exchange"></i> Price
+                            </button>
+                            <a href="{{ url_for('product_price_history', id=product.id) }}" class="btn btn-sm btn-outline-info" style="margin-left: 0.4rem;">
+                                <i class="bi bi-clock-history"></i>
+                            </a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% else %}
@@ -92,5 +100,35 @@
 </div>
 
 <p class="text-muted" style="margin-top: 1.5rem; text-align: center;">User must be able to update the stock from here.</p>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('.btn-edit-price').forEach(function(btn){
+        btn.addEventListener('click', function(){
+            const id = this.dataset.id;
+            const newSale = prompt('Enter new sale price (numbers only)');
+            if(newSale === null) return;
+            const newCost = prompt('Enter new cost price (numbers only)');
+            if(newCost === null) return;
+
+            fetch(`/products/${id}/price-update`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({sale_price: newSale, cost_price: newCost})
+            }).then(r=>r.json()).then(data=>{
+                if(data.success){
+                    alert('Price updated');
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown'));
+                }
+            }).catch(err=>{ alert('Request failed') });
+        });
+    });
+});
+</script>
 {% endblock %}
 

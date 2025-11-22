@@ -198,3 +198,35 @@ def notify_system_alert(user_id, title, message, related_model=None, related_id=
         related_model=related_model,
         related_id=related_id
     )
+
+
+def validate_price(value):
+    """Validate and normalize a price value. Returns float or raises ValueError."""
+    try:
+        if value is None or value == '':
+            return 0.0
+        pv = float(value)
+    except (TypeError, ValueError):
+        raise ValueError('Invalid price value')
+    if pv < 0:
+        raise ValueError('Price cannot be negative')
+    return pv
+
+
+def log_price_change(user_id, product, old_cost, new_cost, old_sale, new_sale, reason=None):
+    """Create a PriceHistory record logging the change."""
+    from app import db
+    from models import PriceHistory
+
+    ph = PriceHistory(
+        product_id=product.id,
+        old_cost=old_cost,
+        new_cost=new_cost,
+        old_sale=old_sale,
+        new_sale=new_sale,
+        changed_by=user_id,
+        reason=reason
+    )
+    db.session.add(ph)
+    db.session.commit()
+    return ph

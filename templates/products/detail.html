@@ -46,6 +46,14 @@
                         <td>{{ product.max_stock }}</td>
                     </tr>
                     <tr>
+                        <th>Cost Price:</th>
+                        <td>Rs. {{ '%.2f'|format(product.cost_price) if product.cost_price is not none else '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sale Price:</th>
+                        <td>Rs. {{ '%.2f'|format(product.sale_price) if product.sale_price is not none else '-' }}</td>
+                    </tr>
+                    <tr>
                         <th>Reorder Quantity:</th>
                         <td>{{ product.reorder_qty }}</td>
                     </tr>

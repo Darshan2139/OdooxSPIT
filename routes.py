@@ -227,6 +227,9 @@ def product_create():
             min_stock=float(request.form.get('min_stock', 0) or 0),
             max_stock=float(request.form.get('max_stock', 0) or 0),
             reorder_qty=float(request.form.get('reorder_qty', 0) or 0),
+            cost_price=float(request.form.get('cost_price', 0) or 0),
+            sale_price=float(request.form.get('sale_price', 0) or 0),
+            currency=request.form.get('currency', 'USD'),
         )
         db.session.add(product)
         db.session.commit()
@@ -259,12 +262,67 @@ def product_edit(id):
         product.min_stock = float(request.form.get('min_stock', 0) or 0)
         product.max_stock = float(request.form.get('max_stock', 0) or 0)
         product.reorder_qty = float(request.form.get('reorder_qty', 0) or 0)
+        # Pricing updates
+        try:
+            product.cost_price = float(request.form.get('cost_price', product.cost_price) or product.cost_price or 0)
+        except ValueError:
+            product.cost_price = product.cost_price or 0
+        try:
+            product.sale_price = float(request.form.get('sale_price', product.sale_price) or product.sale_price or 0)
+        except ValueError:
+            product.sale_price = product.sale_price or 0
+        product.currency = request.form.get('currency', product.currency or 'USD')
         db.session.commit()
         flash('Product updated successfully', 'success')
         return redirect(url_for('product_detail', id=id))
     
     categories = Category.query.all()
     return render_template('products/form.html', product=product, categories=categories)
+
+
+@app.route('/products/<int:id>/price-update', methods=['POST'])
+@login_required
+@inventory_manager_required
+def product_price_update(id):
+    """API endpoint to update product prices (AJAX) - inventory manager only"""
+    product = Product.query.get_or_404(id)
+    data = request.get_json() or {}
+    try:
+        from utils import validate_price, log_price_change
+
+        old_cost = product.cost_price or 0.0
+        old_sale = product.sale_price or 0.0
+
+        new_cost = validate_price(data.get('cost_price', old_cost))
+        new_sale = validate_price(data.get('sale_price', old_sale))
+
+        # Update product
+        product.cost_price = new_cost
+        product.sale_price = new_sale
+        product.currency = data.get('currency', product.currency or 'USD')
+        db.session.commit()
+
+        # Log history
+        log_price_change(current_user.id, product, old_cost, new_cost, old_sale, new_sale, reason=data.get('reason'))
+
+        return jsonify({'success': True, 'cost_price': new_cost, 'sale_price': new_sale})
+    except ValueError as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'success': False, 'error': 'Failed to update price'}), 500
+
+
+@app.route('/products/<int:id>/price-history')
+@login_required
+def product_price_history(id):
+    """Show price history for a product"""
+    product = Product.query.get_or_404(id)
+    history = product and getattr(product, 'price_history', None)
+    if history is None:
+        # Query directly
+        from models import PriceHistory
+        history = PriceHistory.query.filter_by(product_id=id).order_by(PriceHistory.created_at.desc()).all()
+    return render_template('products/price_history.html', product=product, history=history)
 
 # ========== Receipts ==========
 

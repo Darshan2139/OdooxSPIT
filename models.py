@@ -78,6 +78,10 @@ class Product(db.Model):
     min_stock = db.Column(db.Float, default=0.0)
     max_stock = db.Column(db.Float, default=0.0)
     reorder_qty = db.Column(db.Float, default=0.0)
+    # Pricing
+    cost_price = db.Column(db.Float, default=0.0)
+    sale_price = db.Column(db.Float, default=0.0)
+    currency = db.Column(db.String(8), default='USD')
     active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
@@ -445,4 +449,25 @@ class NotificationPreference(db.Model):
     
     def __repr__(self):
         return f'<NotificationPreference {self.user_id}>'
+
+
+class PriceHistory(db.Model):
+    """Price history for products"""
+    __tablename__ = 'price_history'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False, index=True)
+    old_cost = db.Column(db.Float)
+    new_cost = db.Column(db.Float)
+    old_sale = db.Column(db.Float)
+    new_sale = db.Column(db.Float)
+    changed_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    reason = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+    product = db.relationship('Product')
+    user = db.relationship('User')
+
+    def __repr__(self):
+        return f'<PriceHistory {self.product_id} @ {self.created_at}>'
 

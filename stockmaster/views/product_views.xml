@@ -25,6 +25,11 @@
                             <field name="total_stock" readonly="1"/>
                             <field name="active" widget="boolean_toggle"/>
                         </group>
+                        <group>
+                            <field name="cost_price"/>
+                            <field name="sale_price"/>
+                            <field name="currency_id"/>
+                        </group>
                     </group>
                     
                     <notebook>
@@ -53,6 +58,7 @@
                 <field name="name"/>
                 <field name="sku"/>
                 <field name="category_id"/>
+                <field name="sale_price"/>
                 <field name="total_stock"/>
                 <field name="min_stock"/>
                 <field name="low_stock" widget="boolean_toggle"/>

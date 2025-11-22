@@ -35,6 +35,7 @@ Perfect for:
 
 ### 📊 Core Inventory Management
 - **Product Management** - Create and manage products with SKUs, categories, and stock levels
+- **Pricing Management** - Set and manage product cost and sale prices, supports currency and sync with Odoo product prices
 - **Warehouse Management** - Organize inventory across multiple warehouses and locations
 - **Real-time Stock Tracking** - Monitor stock levels across all locations
 - **Stock Ledger** - Complete audit trail of all inventory movements

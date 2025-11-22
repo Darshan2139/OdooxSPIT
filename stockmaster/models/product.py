@@ -15,6 +15,10 @@ class StockMasterProduct(models.Model):
     category_id = fields.Many2one('product.category', string='Category', tracking=True)
     uom_id = fields.Many2one('uom.uom', string='Unit of Measure', required=True, default=lambda self: self._get_default_uom())
     initial_stock = fields.Float(string='Initial Stock', default=0.0)
+    # Pricing
+    cost_price = fields.Monetary(string='Cost Price', currency_field='currency_id', default=0.0)
+    sale_price = fields.Monetary(string='Sale Price', currency_field='currency_id', default=0.0)
+    currency_id = fields.Many2one('res.currency', string='Currency', required=True, default=lambda self: self.env.ref('base.USD'))
     min_stock = fields.Float(string='Minimum Stock Level', default=0.0, help='Alert when stock falls below this level')
     max_stock = fields.Float(string='Maximum Stock Level', default=0.0)
     reorder_qty = fields.Float(string='Reorder Quantity', default=0.0, help='Suggested quantity to reorder')
@@ -59,6 +63,20 @@ class StockMasterProduct(models.Model):
             }
             product = self.env['product.product'].create(product_vals)
             vals['product_id'] = product.id
+        # sync prices to related product if provided
+        if vals.get('cost_price') is not None or vals.get('sale_price') is not None:
+            # ensure we have a product to write to
+            product = None
+            if vals.get('product_id'):
+                product = self.env['product.product'].browse(vals.get('product_id'))
+            if product and product.exists():
+                pvals = {}
+                if vals.get('cost_price') is not None:
+                    pvals['standard_price'] = vals.get('cost_price')
+                if vals.get('sale_price') is not None:
+                    pvals['list_price'] = vals.get('sale_price')
+                if pvals:
+                    product.write(pvals)
         
         # Set initial stock if provided
         if vals.get('initial_stock', 0) > 0:
@@ -81,6 +99,21 @@ class StockMasterProduct(models.Model):
                         product_vals['categ_id'] = vals['category_id']
                     if product_vals:
                         record.product_id.write(product_vals)
+        # Sync price changes to related product.product
+        price_fields = ['cost_price', 'sale_price']
+        for record in self:
+            pvals = {}
+            if any(f in vals for f in price_fields) and record.product_id:
+                if 'cost_price' in vals:
+                    pvals['standard_price'] = vals.get('cost_price')
+                if 'sale_price' in vals:
+                    pvals['list_price'] = vals.get('sale_price')
+                if pvals:
+                    try:
+                        record.product_id.write(pvals)
+                    except Exception:
+                        # Do not block product write if price sync fails
+                        pass
         
         return super(StockMasterProduct, self).write(vals)
 
