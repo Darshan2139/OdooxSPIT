@@ -1,2 +1,2 @@
-web: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2
+web: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --worker-class sync --timeout 60
 release: python migrations/migrate_add_pricing.py
