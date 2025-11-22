@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Adjustment Form View -->
+    <record id="view_stockmaster_adjustment_form" model="ir.ui.view">
+        <field name="name">stockmaster.adjustment.form</field>
+        <field name="model">stockmaster.adjustment</field>
+        <field name="arch" type="xml">
+            <form string="Stock Adjustment">
+                <header>
+                    <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ['done', 'canceled'])]}"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', '!=', 'canceled')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="date"/>
+                            <field name="product_id" options="{'no_create': True}" required="1"/>
+                            <field name="location_id" domain="[('usage', '=', 'internal')]" required="1"/>
+                            <field name="user_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="recorded_qty" readonly="1" string="Recorded Quantity"/>
+                            <field name="counted_qty" required="1" string="Counted Quantity"/>
+                            <field name="difference" readonly="1" widget="monetary"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Reason" name="reason">
+                            <field name="reason" placeholder="Explain why this adjustment is needed..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Adjustment List View -->
+    <record id="view_stockmaster_adjustment_tree" model="ir.ui.view">
+        <field name="name">stockmaster.adjustment.tree</field>
+        <field name="model">stockmaster.adjustment</field>
+        <field name="arch" type="xml">
+            <tree string="Adjustments" decoration-info="state == 'draft'" decoration-success="state == 'done'" decoration-muted="state == 'canceled'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="product_id"/>
+                <field name="location_id"/>
+                <field name="recorded_qty"/>
+                <field name="counted_qty"/>
+                <field name="difference" widget="monetary"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'done'"/>
+                <field name="user_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Adjustment Search View -->
+    <record id="view_stockmaster_adjustment_search" model="ir.ui.view">
+        <field name="name">stockmaster.adjustment.search</field>
+        <field name="model">stockmaster.adjustment</field>
+        <field name="arch" type="xml">
+            <search string="Search Adjustments">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="location_id"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                <filter string="Canceled" name="canceled" domain="[('state', '=', 'canceled')]"/>
+                <separator/>
+                <filter string="Today" name="today" domain="[('date', '>=', datetime.datetime.now().replace(hour=0, minute=0, second=0))]"/>
+                <filter string="This Week" name="this_week" domain="[('date', '>=', (datetime.datetime.now() - datetime.timedelta(days=7)))]"/>
+                <filter string="This Month" name="this_month" domain="[('date', '>=', (datetime.datetime.now() - datetime.timedelta(days=30)))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Product" name="group_product" context="{'group_by': 'product_id'}"/>
+                    <filter string="Location" name="group_location" context="{'group_by': 'location_id'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Adjustment Action -->
+    <record id="action_stockmaster_adjustment" model="ir.actions.act_window">
+        <field name="name">Stock Adjustments</field>
+        <field name="res_model">stockmaster.adjustment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_stockmaster_adjustment_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first adjustment!
+            </p>
+            <p>
+                Stock adjustments are used to correct discrepancies between recorded and physical stock.
+            </p>
+        </field>
+    </record>
+</odoo>
+

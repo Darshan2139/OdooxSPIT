@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Demo Warehouse -->
+        <record id="demo_warehouse_main" model="stockmaster.warehouse">
+            <field name="name">Main Warehouse</field>
+            <field name="code">WH-MAIN</field>
+            <field name="city">New York</field>
+            <field name="country_id" ref="base.us"/>
+        </record>
+
+        <!-- Demo Product Categories -->
+        <record id="demo_category_raw_materials" model="product.category">
+            <field name="name">Raw Materials</field>
+        </record>
+
+        <record id="demo_category_finished_goods" model="product.category">
+            <field name="name">Finished Goods</field>
+        </record>
+
+        <!-- Demo Products -->
+        <record id="demo_product_steel" model="stockmaster.product">
+            <field name="name">Steel Rods</field>
+            <field name="sku">SKU-STEEL-001</field>
+            <field name="category_id" ref="demo_category_raw_materials"/>
+            <field name="min_stock">50</field>
+            <field name="max_stock">500</field>
+            <field name="reorder_qty">200</field>
+        </record>
+
+        <record id="demo_product_chairs" model="stockmaster.product">
+            <field name="name">Office Chairs</field>
+            <field name="sku">SKU-CHAIR-001</field>
+            <field name="category_id" ref="demo_category_finished_goods"/>
+            <field name="min_stock">10</field>
+            <field name="max_stock">100</field>
+            <field name="reorder_qty">50</field>
+        </record>
+    </data>
+</odoo>
+

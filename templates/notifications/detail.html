@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}{{ notification.title }} - StockMaster{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+    <div style="margin-bottom: 2rem;">
+        <a href="{{ url_for('notifications') }}" style="color: #4dabf7; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="bi bi-chevron-left"></i> Back to Notifications
+        </a>
+    </div>
+
+    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 2rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 1rem;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                    <h1 style="margin: 0; font-size: 1.8rem; color: #1a1a2e;">{{ notification.title }}</h1>
+                    <span style="display: inline-block; padding: 0.3rem 0.8rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500; background: {% if notification.notification_type == 'low_stock' %}#ffe0e0{% elif notification.notification_type == 'operation_completed' %}#e6ffed{% elif notification.notification_type == 'alert' %}#fff3e0{% else %}#e7f5ff{% endif %}; color: {% if notification.notification_type == 'low_stock' %}#d63031{% elif notification.notification_type == 'operation_completed' %}#27ae60{% elif notification.notification_type == 'alert' %}#e67e22{% else %}#3498db{% endif %};">
+                        {{ notification.notification_type.replace('_', ' ').title() }}
+                    </span>
+                </div>
+                <div style="color: #666; font-size: 0.9rem;">
+                    <i class="bi bi-clock"></i>
+                    {{ notification.created_at.strftime('%B %d, %Y at %H:%M') }}
+                    {% if notification.read_at %}
+                        <span style="margin-left: 1rem;">
+                            <i class="bi bi-check-circle"></i>
+                            Read at {{ notification.read_at.strftime('%H:%M') }}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            <button onclick="deleteNotification({{ notification.id }})" style="background: none; border: none; cursor: pointer; color: #ff6b6b; font-size: 1.5rem;" title="Delete">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+
+        <!-- Message -->
+        <div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px; line-height: 1.6;">
+            {{ notification.message }}
+        </div>
+
+        <!-- Details -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
+            <div>
+                <p style="color: #666; font-size: 0.9rem; margin: 0 0 0.5rem 0;">Notification ID</p>
+                <p style="margin: 0; font-weight: 500;">{{ notification.id }}</p>
+            </div>
+            <div>
+                <p style="color: #666; font-size: 0.9rem; margin: 0 0 0.5rem 0;">Status</p>
+                <p style="margin: 0; font-weight: 500;">
+                    {% if notification.is_read %}
+                        <span style="color: #27ae60;"><i class="bi bi-check-circle"></i> Read</span>
+                    {% else %}
+                        <span style="color: #f39c12;"><i class="bi bi-circle"></i> Unread</span>
+                    {% endif %}
+                </p>
+            </div>
+            {% if notification.related_model %}
+                <div>
+                    <p style="color: #666; font-size: 0.9rem; margin: 0 0 0.5rem 0;">Related To</p>
+                    <p style="margin: 0; font-weight: 500;">{{ notification.related_model.title() }}</p>
+                </div>
+            {% endif %}
+            {% if notification.expires_at %}
+                <div>
+                    <p style="color: #666; font-size: 0.9rem; margin: 0 0 0.5rem 0;">Expires</p>
+                    <p style="margin: 0; font-weight: 500;">{{ notification.expires_at.strftime('%B %d, %Y') }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Actions -->
+        <div style="display: flex; gap: 1rem; border-top: 2px solid #f0f0f0; padding-top: 1rem;">
+            <a href="{{ url_for('notifications') }}" class="btn-secondary" style="text-decoration: none; padding: 0.7rem 1.5rem; border-radius: 8px; flex: 1; text-align: center;">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+            {% if not notification.is_read %}
+                <button onclick="markAsRead({{ notification.id }})" class="btn-primary" style="padding: 0.7rem 1.5rem; border-radius: 8px; flex: 1;">
+                    <i class="bi bi-check-circle"></i> Mark as Read
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function markAsRead(notificationId) {
+    fetch(`/notifications/${notificationId}/read`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function deleteNotification(notificationId) {
+    if (confirm('Delete this notification? This action cannot be undone.')) {
+        fetch(`/notifications/${notificationId}/delete`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '{{ url_for('notifications') }}';
+            }
+        });
+    }
+}
+</script>
+
+<style>
+.btn-primary {
+    background: #4dabf7;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background: #339af0;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #e9ecef;
+    color: #1a1a2e;
+    border: 1px solid #dee2e6;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.btn-secondary:hover {
+    background: #dee2e6;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Adjustments - StockMaster{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-sliders"></i> Stock Adjustments</h2>
+    <a href="{{ url_for('adjustment_create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Create Adjustment
+    </a>
+</div>
+
+<!-- Adjustments Table -->
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Adjustment Number</th>
+                    <th>Date</th>
+                    <th>Product</th>
+                    <th>Location</th>
+                    <th>Recorded</th>
+                    <th>Counted</th>
+                    <th>Difference</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for adjustment in adjustments %}
+                <tr>
+                    <td><a href="{{ url_for('adjustment_detail', id=adjustment.id) }}">{{ adjustment.adjustment_number }}</a></td>
+                    <td>{{ adjustment.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ adjustment.product.name }}</td>
+                    <td>{{ adjustment.location.name }}</td>
+                    <td>{{ adjustment.recorded_qty }}</td>
+                    <td>{{ adjustment.counted_qty }}</td>
+                    <td>
+                        <span class="{% if adjustment.difference > 0 %}text-success{% elif adjustment.difference < 0 %}text-danger{% endif %}">
+                            {{ adjustment.difference }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge bg-{% if adjustment.state == 'done' %}success{% elif adjustment.state == 'draft' %}secondary{% else %}danger{% endif %}">
+                            {{ adjustment.state }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('adjustment_detail', id=adjustment.id) }}" class="btn btn-sm btn-info">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="text-center text-muted">No adjustments found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

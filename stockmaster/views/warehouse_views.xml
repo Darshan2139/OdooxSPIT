@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Warehouse Form View -->
+    <record id="view_stockmaster_warehouse_form" model="ir.ui.view">
+        <field name="name">stockmaster.warehouse.form</field>
+        <field name="model">stockmaster.warehouse</field>
+        <field name="arch" type="xml">
+            <form string="Warehouse">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="warehouse_id" readonly="1"/>
+                            <field name="location_id" domain="[('usage', '=', 'internal')]"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="total_products" readonly="1"/>
+                            <field name="total_stock_value" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Address" name="address">
+                            <group>
+                                <group>
+                                    <field name="street"/>
+                                    <field name="street2"/>
+                                    <field name="city"/>
+                                    <field name="state_id"/>
+                                </group>
+                                <group>
+                                    <field name="zip"/>
+                                    <field name="country_id"/>
+                                    <field name="phone"/>
+                                    <field name="email"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Warehouse List View -->
+    <record id="view_stockmaster_warehouse_tree" model="ir.ui.view">
+        <field name="name">stockmaster.warehouse.tree</field>
+        <field name="model">stockmaster.warehouse</field>
+        <field name="arch" type="xml">
+            <tree string="Warehouses" decoration-muted="active == False">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="location_id"/>
+                <field name="total_products"/>
+                <field name="total_stock_value"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Warehouse Search View -->
+    <record id="view_stockmaster_warehouse_search" model="ir.ui.view">
+        <field name="name">stockmaster.warehouse.search</field>
+        <field name="model">stockmaster.warehouse</field>
+        <field name="arch" type="xml">
+            <search string="Search Warehouses">
+                <field name="name"/>
+                <field name="code"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Warehouse Action -->
+    <record id="action_stockmaster_warehouse" model="ir.actions.act_window">
+        <field name="name">Warehouses</field>
+        <field name="res_model">stockmaster.warehouse</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_stockmaster_warehouse_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first warehouse!
+            </p>
+            <p>
+                Warehouses represent physical locations where you store inventory.
+            </p>
+        </field>
+    </record>
+</odoo>
+

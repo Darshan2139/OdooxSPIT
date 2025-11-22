@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}{% if warehouse %}Edit{% else %}Create{% endif %} Warehouse - StockMaster{% endblock %}
+
+{% block content %}
+<h2 style="color: #003366; font-weight: 600; margin-bottom: 2rem;">
+    <i class="bi bi-building"></i> Warehouse
+</h2>
+
+<div class="card">
+    <div class="card-header">
+        <h5 style="margin: 0;">Warehouse Details</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <div>
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" 
+                           value="{% if warehouse %}{{ warehouse.name }}{% endif %}" required>
+                </div>
+                <div>
+                    <label for="code" class="form-label">Short Code</label>
+                    <input type="text" class="form-control" id="code" name="code" 
+                           value="{% if warehouse %}{{ warehouse.code }}{% endif %}" required>
+                </div>
+            </div>
+            
+            <div style="margin-top: 1.5rem;">
+                <label for="address" class="form-label">Address</label>
+                <textarea class="form-control" id="address" name="address" rows="3" style="resize: vertical;">{% if warehouse %}{{ warehouse.address }}{% endif %}</textarea>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                <div>
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" id="city" name="city" 
+                           value="{% if warehouse %}{{ warehouse.city }}{% endif %}">
+                </div>
+                <div>
+                    <label for="state" class="form-label">State</label>
+                    <input type="text" class="form-control" id="state" name="state" 
+                           value="{% if warehouse %}{{ warehouse.state }}{% endif %}">
+                </div>
+                <div>
+                    <label for="zip_code" class="form-label">ZIP Code</label>
+                    <input type="text" class="form-control" id="zip_code" name="zip_code" 
+                           value="{% if warehouse %}{{ warehouse.zip_code }}{% endif %}">
+                </div>
+                <div>
+                    <label for="country" class="form-label">Country</label>
+                    <input type="text" class="form-control" id="country" name="country" 
+                           value="{% if warehouse %}{{ warehouse.country }}{% endif %}">
+                </div>
+                <div>
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" 
+                           value="{% if warehouse %}{{ warehouse.phone }}{% endif %}">
+                </div>
+                <div>
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" 
+                           value="{% if warehouse %}{{ warehouse.email }}{% endif %}">
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Save
+                </button>
+                <a href="{{ url_for('warehouses') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

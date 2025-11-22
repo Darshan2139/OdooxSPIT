@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}{% if partner %}Edit{% else %}Create{% endif %} Partner - StockMaster{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">
+    <i class="bi bi-people"></i> {% if partner %}Edit{% else %}Create{% endif %} Partner
+</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="name" class="form-label">Name *</label>
+                    <input type="text" class="form-control" id="name" name="name" 
+                           value="{% if partner %}{{ partner.name }}{% endif %}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="type" class="form-label">Type *</label>
+                    <select class="form-select" id="type" name="type" required>
+                        <option value="">Select Type</option>
+                        <option value="supplier" {% if partner and partner.type == 'supplier' %}selected{% endif %}>Supplier</option>
+                        <option value="customer" {% if partner and partner.type == 'customer' %}selected{% endif %}>Customer</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" 
+                           value="{% if partner %}{{ partner.email or '' }}{% endif %}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" 
+                           value="{% if partner %}{{ partner.phone or '' }}{% endif %}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="address" class="form-label">Address</label>
+                <textarea class="form-control" id="address" name="address" rows="2">{% if partner %}{{ partner.address or '' }}{% endif %}</textarea>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" id="city" name="city" 
+                           value="{% if partner %}{{ partner.city or '' }}{% endif %}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="state" class="form-label">State</label>
+                    <input type="text" class="form-control" id="state" name="state" 
+                           value="{% if partner %}{{ partner.state or '' }}{% endif %}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="zip_code" class="form-label">ZIP Code</label>
+                    <input type="text" class="form-control" id="zip_code" name="zip_code" 
+                           value="{% if partner %}{{ partner.zip_code or '' }}{% endif %}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="country" class="form-label">Country</label>
+                <input type="text" class="form-control" id="country" name="country" 
+                       value="{% if partner %}{{ partner.country or '' }}{% endif %}">
+            </div>
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Save
+                </button>
+                <a href="{% if partner %}{{ url_for('partner_detail', id=partner.id) }}{% else %}{{ url_for('partners') }}{% endif %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

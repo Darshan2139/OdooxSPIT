@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Receipts - StockMaster{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2 style="color: #003366; font-weight: 600; margin: 0;"><i class="bi bi-arrow-down-circle"></i> Receipts</h2>
+    <a href="{{ url_for('receipt_create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> NEW
+    </a>
+</div>
+
+<!-- Status Filters -->
+<div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+    <a href="{{ url_for('receipts') }}" class="btn btn-sm {% if not state %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+    <a href="{{ url_for('receipts', state='draft') }}" class="btn btn-sm {% if state == 'draft' %}btn-primary{% else %}btn-outline-primary{% endif %}">Draft</a>
+    <a href="{{ url_for('receipts', state='waiting') }}" class="btn btn-sm {% if state == 'waiting' %}btn-primary{% else %}btn-outline-primary{% endif %}">Waiting</a>
+    <a href="{{ url_for('receipts', state='ready') }}" class="btn btn-sm {% if state == 'ready' %}btn-primary{% else %}btn-outline-primary{% endif %}">Ready</a>
+    <a href="{{ url_for('receipts', state='done') }}" class="btn btn-sm {% if state == 'done' %}btn-primary{% else %}btn-outline-primary{% endif %}">Done</a>
+</div>
+
+<!-- Receipts Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Date</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Contact</th>
+                        <th>Schedule Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for receipt in receipts %}
+                    <tr>
+                        <td style="font-weight: 600; color: #003366;">
+                            <a href="{{ url_for('receipt_detail', id=receipt.id) }}" style="color: #003366; text-decoration: none;">
+                                {{ receipt.receipt_number }}
+                            </a>
+                        </td>
+                        <td>{{ receipt.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ receipt.supplier.name if receipt.supplier else '-' }}</td>
+                        <td>{{ receipt.warehouse.name }}</td>
+                        <td>{{ receipt.supplier.name if receipt.supplier else '-' }}</td>
+                        <td>{{ receipt.date.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <span class="badge" style="background-color: {% if receipt.state == 'done' %}#28a745{% elif receipt.state == 'draft' %}#6c757d{% else %}#ffc107{% endif %}; color: {% if receipt.state == 'done' or receipt.state != 'draft' %}white{% else %}#333{% endif %};">
+                                {{ receipt.state }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('receipt_detail', id=receipt.id) }}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted" style="padding: 2rem;">No receipts found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

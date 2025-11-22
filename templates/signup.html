@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - StockMaster{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-wrapper" style="max-width: 450px; margin: 0 auto;">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <h3 class="auth-title">Create Account</h3>
+            <p style="text-align: center; color: #666; margin-bottom: 2rem; font-size: 0.95rem;">Join StockMaster to manage your inventory</p>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div style="background-color: {% if category == 'error' %}#f8d7da{% elif category == 'success' %}#d4edda{% else %}#d1ecf1{% endif %}; border: 1px solid {% if category == 'error' %}#f5c6cb{% elif category == 'success' %}#c3e6cb{% else %}#bee5eb{% endif %}; color: {% if category == 'error' %}#721c24{% elif category == 'success' %}#155724{% else %}#0c5460{% endif %}; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST">
+                <div class="auth-form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                </div>
+                <div class="auth-form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="auth-form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter password (min 6 characters)" required>
+                </div>
+                <div class="auth-form-group">
+                    <label for="role">Role</label>
+                    <select id="role" name="role" required>
+                        <option value="">Select your role</option>
+                        <option value="warehouse_staff">Warehouse Staff</option>
+                        <option value="inventory_manager">Inventory Manager</option>
+                    </select>
+                </div>
+                <button type="submit" class="auth-button">CREATE ACCOUNT</button>
+            </form>
+            
+            <div class="auth-links" style="margin-top: 1.5rem; text-align: center;">
+                <p style="color: #666; font-size: 0.9rem;">
+                    Already have an account? <a href="{{ url_for('login') }}" style="color: #003366; text-decoration: none; font-weight: 600;">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

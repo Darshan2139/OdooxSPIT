@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Product Form View -->
+    <record id="view_stockmaster_product_form" model="ir.ui.view">
+        <field name="name">stockmaster.product.form</field>
+        <field name="model">stockmaster.product</field>
+        <field name="arch" type="xml">
+            <form string="Product">
+                <header>
+                    <button name="action_view_stock" type="action" string="View Stock" class="oe_highlight"/>
+                    <field name="low_stock" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="Product Name"/>
+                            <field name="sku" placeholder="SKU-001"/>
+                            <field name="category_id"/>
+                            <field name="uom_id"/>
+                        </group>
+                        <group>
+                            <field name="min_stock"/>
+                            <field name="max_stock"/>
+                            <field name="reorder_qty"/>
+                            <field name="total_stock" readonly="1"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Stock by Location" name="stock_location">
+                            <field name="stock_by_location_ids" nolabel="1">
+                                <tree>
+                                    <field name="location_id"/>
+                                    <field name="warehouse_id"/>
+                                    <field name="quantity"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Product List View -->
+    <record id="view_stockmaster_product_tree" model="ir.ui.view">
+        <field name="name">stockmaster.product.tree</field>
+        <field name="model">stockmaster.product</field>
+        <field name="arch" type="xml">
+            <tree string="Products" decoration-danger="low_stock == True" decoration-muted="active == False">
+                <field name="name"/>
+                <field name="sku"/>
+                <field name="category_id"/>
+                <field name="total_stock"/>
+                <field name="min_stock"/>
+                <field name="low_stock" widget="boolean_toggle"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Product Search View -->
+    <record id="view_stockmaster_product_search" model="ir.ui.view">
+        <field name="name">stockmaster.product.search</field>
+        <field name="model">stockmaster.product</field>
+        <field name="arch" type="xml">
+            <search string="Search Products">
+                <field name="name" string="Product Name"/>
+                <field name="sku" string="SKU" filter_domain="[('sku', 'ilike', self)]"/>
+                <field name="category_id"/>
+                <filter string="Low Stock" name="low_stock" domain="[('low_stock', '=', True)]"/>
+                <filter string="Out of Stock" name="out_of_stock" domain="[('total_stock', '&lt;=', 0)]"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Category" name="group_category" context="{'group_by': 'category_id'}"/>
+                    <filter string="Low Stock" name="group_low_stock" context="{'group_by': 'low_stock'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Product Action -->
+    <record id="action_stockmaster_product" model="ir.actions.act_window">
+        <field name="name">Products</field>
+        <field name="res_model">stockmaster.product</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_stockmaster_product_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first product!
+            </p>
+            <p>
+                Products are the items you track in your inventory.
+            </p>
+        </field>
+    </record>
+</odoo>
+

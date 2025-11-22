@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Stock Ledger List View -->
+    <record id="view_stockmaster_stock_ledger_tree" model="ir.ui.view">
+        <field name="name">stockmaster.stock.ledger.tree</field>
+        <field name="model">stockmaster.stock.ledger</field>
+        <field name="arch" type="xml">
+            <tree string="Stock Ledger" decoration-info="operation_type == 'receipt'" decoration-danger="operation_type == 'delivery'" decoration-warning="operation_type in ['transfer_in', 'transfer_out']">
+                <field name="date"/>
+                <field name="product_id"/>
+                <field name="location_id"/>
+                <field name="operation_type" widget="badge" decoration-info="operation_type == 'receipt'" decoration-danger="operation_type == 'delivery'"/>
+                <field name="reference"/>
+                <field name="quantity_in"/>
+                <field name="quantity_out"/>
+                <field name="balance"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Stock Ledger Search View -->
+    <record id="view_stockmaster_stock_ledger_search" model="ir.ui.view">
+        <field name="name">stockmaster.stock.ledger.search</field>
+        <field name="model">stockmaster.stock.ledger</field>
+        <field name="arch" type="xml">
+            <search string="Search Stock Ledger">
+                <field name="product_id"/>
+                <field name="location_id"/>
+                <field name="reference"/>
+                <field name="partner_id"/>
+                <filter string="Receipts" name="receipts" domain="[('operation_type', '=', 'receipt')]"/>
+                <filter string="Deliveries" name="deliveries" domain="[('operation_type', '=', 'delivery')]"/>
+                <filter string="Transfers" name="transfers" domain="[('operation_type', 'in', ['transfer_in', 'transfer_out'])]"/>
+                <filter string="Adjustments" name="adjustments" domain="[('operation_type', '=', 'adjustment')]"/>
+                <separator/>
+                <filter string="Today" name="today" domain="[('date', '>=', datetime.datetime.now().replace(hour=0, minute=0, second=0))]"/>
+                <filter string="This Week" name="this_week" domain="[('date', '>=', (datetime.datetime.now() - datetime.timedelta(days=7)))]"/>
+                <filter string="This Month" name="this_month" domain="[('date', '>=', (datetime.datetime.now() - datetime.timedelta(days=30)))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Product" name="group_product" context="{'group_by': 'product_id'}"/>
+                    <filter string="Location" name="group_location" context="{'group_by': 'location_id'}"/>
+                    <filter string="Operation Type" name="group_operation" context="{'group_by': 'operation_type'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Stock Ledger Action -->
+    <record id="action_stockmaster_stock_ledger" model="ir.actions.act_window">
+        <field name="name">Stock Ledger</field>
+        <field name="res_model">stockmaster.stock.ledger</field>
+        <field name="view_mode">tree</field>
+        <field name="search_view_id" ref="view_stockmaster_stock_ledger_search"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No ledger entries yet!
+            </p>
+            <p>
+                The stock ledger shows all inventory movements and provides a complete audit trail.
+            </p>
+        </field>
+    </record>
+
+    <!-- Stock Move List View -->
+    <record id="view_stockmaster_stock_move_tree" model="ir.ui.view">
+        <field name="name">stockmaster.stock.move.tree</field>
+        <field name="model">stockmaster.stock.move</field>
+        <field name="arch" type="xml">
+            <tree string="Stock Moves">
+                <field name="name"/>
+                <field name="move_type"/>
+                <field name="reference"/>
+                <field name="product_id"/>
+                <field name="location_id"/>
+                <field name="location_dest_id"/>
+                <field name="quantity"/>
+                <field name="date"/>
+                <field name="partner_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Stock Move Search View -->
+    <record id="view_stockmaster_stock_move_search" model="ir.ui.view">
+        <field name="name">stockmaster.stock.move.search</field>
+        <field name="model">stockmaster.stock.move</field>
+        <field name="arch" type="xml">
+            <search string="Search Stock Moves">
+                <field name="name"/>
+                <field name="reference"/>
+                <field name="product_id"/>
+                <field name="move_type"/>
+                <filter string="Receipts" name="receipts" domain="[('move_type', '=', 'receipt')]"/>
+                <filter string="Deliveries" name="deliveries" domain="[('move_type', '=', 'delivery')]"/>
+                <filter string="Transfers" name="transfers" domain="[('move_type', '=', 'transfer')]"/>
+                <filter string="Adjustments" name="adjustments" domain="[('move_type', 'in', ['adjustment_in', 'adjustment_out'])]"/>
+                <separator/>
+                <filter string="Today" name="today" domain="[('date', '>=', datetime.datetime.now().replace(hour=0, minute=0, second=0))]"/>
+                <filter string="This Week" name="this_week" domain="[('date', '>=', (datetime.datetime.now() - datetime.timedelta(days=7)))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Move Type" name="group_type" context="{'group_by': 'move_type'}"/>
+                    <filter string="Product" name="group_product" context="{'group_by': 'product_id'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Stock Move Action -->
+    <record id="action_stockmaster_stock_move" model="ir.actions.act_window">
+        <field name="name">Move History</field>
+        <field name="res_model">stockmaster.stock.move</field>
+        <field name="view_mode">tree</field>
+        <field name="search_view_id" ref="view_stockmaster_stock_move_search"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No moves yet!
+            </p>
+            <p>
+                Move history shows all stock movements in the system.
+            </p>
+        </field>
+    </record>
+</odoo>
+

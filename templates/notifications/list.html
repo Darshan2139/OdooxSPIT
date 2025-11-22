@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications - StockMaster{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1 style="margin: 0; font-size: 2rem; color: #1a1a2e;">
+            <i class="bi bi-bell"></i> Notifications
+        </h1>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{{ url_for('notification_preferences') }}" class="btn-secondary" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px;">
+                <i class="bi bi-gear"></i> Preferences
+            </a>
+            <button onclick="markAllRead()" class="btn-primary" style="padding: 0.5rem 1rem; border-radius: 8px; border: none; cursor: pointer;">
+                <i class="bi bi-check-all"></i> Mark All Read
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter Options -->
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+        <a href="{{ url_for('notifications', filter='all') }}" 
+           class="{% if filter_type == 'all' %}btn-primary{% else %}btn-secondary{% endif %}" 
+           style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">
+            All
+        </a>
+        <a href="{{ url_for('notifications', filter='unread') }}" 
+           class="{% if filter_type == 'unread' %}btn-primary{% else %}btn-secondary{% endif %}" 
+           style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">
+            Unread
+        </a>
+        <a href="{{ url_for('notifications', filter='read') }}" 
+           class="{% if filter_type == 'read' %}btn-primary{% else %}btn-secondary{% endif %}" 
+           style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">
+            Read
+        </a>
+    </div>
+
+    <!-- Notifications List -->
+    {% if notifications.items %}
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {% for notification in notifications.items %}
+                <div class="notification-card" style="padding: 1rem; border-radius: 8px; border-left: 4px solid {% if notification.notification_type == 'low_stock' %}#ff6b6b{% elif notification.notification_type == 'operation_completed' %}#51cf66{% elif notification.notification_type == 'alert' %}#ffa94d{% else %}#4dabf7{% endif %}; background: {% if notification.is_read %}#f8f9fa{% else %}#e7f5ff{% endif %}; cursor: pointer; transition: all 0.3s;" 
+                     onclick="window.location.href='{{ url_for('notification_detail', id=notification.id) }}'">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <h3 style="margin: 0; font-size: 1rem; color: #1a1a2e;">{{ notification.title }}</h3>
+                                {% if not notification.is_read %}
+                                    <span style="display: inline-block; width: 8px; height: 8px; background: #4dabf7; border-radius: 50%;"></span>
+                                {% endif %}
+                            </div>
+                            <p style="margin: 0 0 0.5rem 0; color: #666; font-size: 0.95rem;">{{ notification.message }}</p>
+                            <div style="display: flex; gap: 1rem; color: #999; font-size: 0.85rem;">
+                                <span>
+                                    <i class="bi bi-clock"></i>
+                                    {{ notification.created_at.strftime('%b %d, %Y %H:%M') }}
+                                </span>
+                                <span style="background: {% if notification.notification_type == 'low_stock' %}#ffe0e0{% elif notification.notification_type == 'operation_completed' %}#e6ffed{% elif notification.notification_type == 'alert' %}#fff3e0{% else %}#e7f5ff{% endif %}; padding: 0.2rem 0.6rem; border-radius: 4px; color: {% if notification.notification_type == 'low_stock' %}#d63031{% elif notification.notification_type == 'operation_completed' %}#27ae60{% elif notification.notification_type == 'alert' %}#e67e22{% else %}#3498db{% endif %};">
+                                    {{ notification.notification_type.replace('_', ' ').title() }}
+                                </span>
+                            </div>
+                        </div>
+                        <div style="margin-left: 1rem; display: flex; gap: 0.5rem;">
+                            {% if not notification.is_read %}
+                                <button onclick="event.stopPropagation(); markAsRead({{ notification.id }})" title="Mark as read" style="background: none; border: none; cursor: pointer; color: #4dabf7; font-size: 1.2rem;">
+                                    <i class="bi bi-check-circle"></i>
+                                </button>
+                            {% endif %}
+                            <button onclick="event.stopPropagation(); deleteNotification({{ notification.id }})" title="Delete" style="background: none; border: none; cursor: pointer; color: #ff6b6b; font-size: 1.2rem;">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if notifications.pages > 1 %}
+            <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem;">
+                {% if notifications.has_prev %}
+                    <a href="{{ url_for('notifications', page=notifications.prev_num, filter=filter_type) }}" class="btn-secondary" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px;">
+                        Previous
+                    </a>
+                {% endif %}
+
+                {% for page_num in notifications.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num == notifications.page %}
+                            <button disabled style="padding: 0.5rem 1rem; border-radius: 8px; background: #4dabf7; color: white; border: none; cursor: default;">
+                                {{ page_num }}
+                            </button>
+                        {% else %}
+                            <a href="{{ url_for('notifications', page=page_num, filter=filter_type) }}" class="btn-secondary" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px;">
+                                {{ page_num }}
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if notifications.has_next %}
+                    <a href="{{ url_for('notifications', page=notifications.next_num, filter=filter_type) }}" class="btn-secondary" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px;">
+                        Next
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <div style="text-align: center; padding: 3rem 1rem; color: #666;">
+            <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc; display: block; margin-bottom: 1rem;"></i>
+            <p>No notifications found</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function markAsRead(notificationId) {
+    fetch(`/notifications/${notificationId}/read`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function deleteNotification(notificationId) {
+    if (confirm('Delete this notification?')) {
+        fetch(`/notifications/${notificationId}/delete`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function markAllRead() {
+    fetch('/notifications/read-all', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+
+<style>
+.notification-card:hover {
+    background: #f0f0f0 !important;
+    transform: translateX(2px);
+}
+
+.btn-primary {
+    background: #4dabf7;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: #339af0;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #e9ecef;
+    color: #1a1a2e;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    background: #dee2e6;
+}
+</style>
+{% endblock %}

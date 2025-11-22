@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Transfers - StockMaster{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-arrow-left-right"></i> Internal Transfers</h2>
+    <a href="{{ url_for('transfer_create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Create Transfer
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="mb-3">
+    <a href="{{ url_for('transfers') }}" class="btn btn-sm {% if not state %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+    <a href="{{ url_for('transfers', state='draft') }}" class="btn btn-sm {% if state == 'draft' %}btn-primary{% else %}btn-outline-primary{% endif %}">Draft</a>
+    <a href="{{ url_for('transfers', state='waiting') }}" class="btn btn-sm {% if state == 'waiting' %}btn-primary{% else %}btn-outline-primary{% endif %}">Waiting</a>
+    <a href="{{ url_for('transfers', state='ready') }}" class="btn btn-sm {% if state == 'ready' %}btn-primary{% else %}btn-outline-primary{% endif %}">Ready</a>
+    <a href="{{ url_for('transfers', state='done') }}" class="btn btn-sm {% if state == 'done' %}btn-primary{% else %}btn-outline-primary{% endif %}">Done</a>
+</div>
+
+<!-- Transfers Table -->
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Transfer Number</th>
+                    <th>Date</th>
+                    <th>From Location</th>
+                    <th>To Location</th>
+                    <th>Products</th>
+                    <th>Total Qty</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transfer in transfers %}
+                <tr>
+                    <td><a href="{{ url_for('transfer_detail', id=transfer.id) }}">{{ transfer.transfer_number }}</a></td>
+                    <td>{{ transfer.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ transfer.source_location.name }}</td>
+                    <td>{{ transfer.destination_location.name }}</td>
+                    <td>{{ transfer.total_products }}</td>
+                    <td>{{ transfer.total_quantity }}</td>
+                    <td>
+                        <span class="badge bg-{% if transfer.state == 'done' %}success{% elif transfer.state == 'draft' %}secondary{% else %}warning{% endif %}">
+                            {{ transfer.state }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('transfer_detail', id=transfer.id) }}" class="btn btn-sm btn-info">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted">No transfers found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

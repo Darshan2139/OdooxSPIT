@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Notification Preferences - StockMaster{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+    <div style="margin-bottom: 2rem;">
+        <h1 style="margin: 0 0 0.5rem 0; font-size: 2rem; color: #1a1a2e;">
+            <i class="bi bi-gear"></i> Notification Preferences
+        </h1>
+        <p style="color: #666; margin: 0;">Configure how you receive notifications</p>
+    </div>
+
+    <form method="POST" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <!-- Notification Types -->
+        <div style="margin-bottom: 2rem;">
+            <h2 style="margin: 0 0 1.5rem 0; font-size: 1.3rem; color: #1a1a2e; border-bottom: 2px solid #f0f0f0; padding-bottom: 0.5rem;">
+                <i class="bi bi-bell"></i> Notification Types
+            </h2>
+
+            <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <input type="checkbox" id="enable_low_stock_alerts" name="enable_low_stock_alerts" 
+                       {% if preferences.enable_low_stock_alerts %}checked{% endif %} 
+                       style="width: 18px; height: 18px; cursor: pointer; margin-right: 1rem;">
+                <div style="flex: 1;">
+                    <label for="enable_low_stock_alerts" style="cursor: pointer; display: block; font-weight: 500; margin-bottom: 0.3rem;">
+                        <i class="bi bi-exclamation-circle"></i> Low Stock Alerts
+                    </label>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Get notified when product stock falls below minimum threshold</p>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <input type="checkbox" id="enable_operation_alerts" name="enable_operation_alerts" 
+                       {% if preferences.enable_operation_alerts %}checked{% endif %} 
+                       style="width: 18px; height: 18px; cursor: pointer; margin-right: 1rem;">
+                <div style="flex: 1;">
+                    <label for="enable_operation_alerts" style="cursor: pointer; display: block; font-weight: 500; margin-bottom: 0.3rem;">
+                        <i class="bi bi-check-circle"></i> Operation Alerts
+                    </label>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Get notified when receipts, deliveries, and transfers are completed</p>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <input type="checkbox" id="enable_system_alerts" name="enable_system_alerts" 
+                       {% if preferences.enable_system_alerts %}checked{% endif %} 
+                       style="width: 18px; height: 18px; cursor: pointer; margin-right: 1rem;">
+                <div style="flex: 1;">
+                    <label for="enable_system_alerts" style="cursor: pointer; display: block; font-weight: 500; margin-bottom: 0.3rem;">
+                        <i class="bi bi-info-circle"></i> System Alerts
+                    </label>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Get notified about system updates and important information</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delivery Methods -->
+        <div style="margin-bottom: 2rem;">
+            <h2 style="margin: 0 0 1.5rem 0; font-size: 1.3rem; color: #1a1a2e; border-bottom: 2px solid #f0f0f0; padding-bottom: 0.5rem;">
+                <i class="bi bi-send"></i> Delivery Methods
+            </h2>
+
+            <div style="display: flex; align-items: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <input type="checkbox" id="enable_email_notifications" name="enable_email_notifications" 
+                       {% if preferences.enable_email_notifications %}checked{% endif %} 
+                       style="width: 18px; height: 18px; cursor: pointer; margin-right: 1rem;">
+                <div style="flex: 1;">
+                    <label for="enable_email_notifications" style="cursor: pointer; display: block; font-weight: 500; margin-bottom: 0.3rem;">
+                        <i class="bi bi-envelope"></i> Email Notifications
+                    </label>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Send notifications to {{ current_user.email }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Threshold Settings -->
+        <div style="margin-bottom: 2rem;">
+            <h2 style="margin: 0 0 1.5rem 0; font-size: 1.3rem; color: #1a1a2e; border-bottom: 2px solid #f0f0f0; padding-bottom: 0.5rem;">
+                <i class="bi bi-sliders"></i> Alert Thresholds
+            </h2>
+
+            <div style="padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <label for="low_stock_threshold" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">
+                    Low Stock Alert Threshold
+                </label>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <input type="range" id="low_stock_threshold" name="low_stock_threshold" 
+                           min="0.1" max="1" step="0.1" value="{{ preferences.low_stock_threshold }}"
+                           style="flex: 1; height: 6px;">
+                    <span id="threshold_value" style="min-width: 50px; font-weight: 500;">
+                        {{ (preferences.low_stock_threshold * 100)|int }}%
+                    </span>
+                </div>
+                <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.9rem;">
+                    Notify me when stock falls below <span id="threshold_percent">{{ (preferences.low_stock_threshold * 100)|int }}</span>% of minimum stock level
+                </p>
+            </div>
+        </div>
+
+        <!-- Current Settings Info -->
+        <div style="margin-bottom: 2rem; padding: 1rem; background: #e7f5ff; border-left: 4px solid #4dabf7; border-radius: 8px;">
+            <p style="margin: 0; color: #1a1a2e;">
+                <i class="bi bi-info-circle"></i> 
+                <strong>In-app notifications</strong> are always enabled in the notification center. These settings control which types of notifications you receive.
+            </p>
+        </div>
+
+        <!-- Buttons -->
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn-primary" style="flex: 1; padding: 0.7rem 1.5rem; border-radius: 8px;">
+                <i class="bi bi-check-circle"></i> Save Preferences
+            </button>
+            <a href="{{ url_for('notifications') }}" class="btn-secondary" style="flex: 1; padding: 0.7rem 1.5rem; border-radius: 8px; text-align: center; text-decoration: none;">
+                <i class="bi bi-x-circle"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Update threshold display when slider changes
+document.getElementById('low_stock_threshold').addEventListener('input', function() {
+    const percent = Math.round(this.value * 100);
+    document.getElementById('threshold_value').textContent = percent + '%';
+    document.getElementById('threshold_percent').textContent = percent;
+});
+</script>
+
+<style>
+.btn-primary {
+    background: #4dabf7;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background: #339af0;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #e9ecef;
+    color: #1a1a2e;
+    border: 1px solid #dee2e6;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.btn-secondary:hover {
+    background: #dee2e6;
+}
+
+input[type="checkbox"] {
+    cursor: pointer;
+}
+
+input[type="range"] {
+    cursor: pointer;
+}
+</style>
+{% endblock %}

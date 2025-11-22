@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Receipt Sequence -->
+        <record id="sequence_stockmaster_receipt" model="ir.sequence">
+            <field name="name">Stock Receipt</field>
+            <field name="code">stockmaster.receipt</field>
+            <field name="prefix">REC-</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">1</field>
+        </record>
+
+        <!-- Delivery Sequence -->
+        <record id="sequence_stockmaster_delivery" model="ir.sequence">
+            <field name="name">Delivery Order</field>
+            <field name="code">stockmaster.delivery</field>
+            <field name="prefix">DEL-</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">1</field>
+        </record>
+
+        <!-- Transfer Sequence -->
+        <record id="sequence_stockmaster_transfer" model="ir.sequence">
+            <field name="name">Internal Transfer</field>
+            <field name="code">stockmaster.transfer</field>
+            <field name="prefix">TRF-</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">1</field>
+        </record>
+
+        <!-- Adjustment Sequence -->
+        <record id="sequence_stockmaster_adjustment" model="ir.sequence">
+            <field name="name">Stock Adjustment</field>
+            <field name="code">stockmaster.adjustment</field>
+            <field name="prefix">ADJ-</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">1</field>
+        </record>
+    </data>
+</odoo>
+

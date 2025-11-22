@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - StockMaster{% endblock %}
+
+{% block content %}
+<h2 style="color: #003366; font-weight: 600; margin-bottom: 2rem;">Dashboard</h2>
+
+<!-- Dashboard Cards Row -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+    <!-- Receipt Card -->
+    <div class="dashboard-card">
+        <h4><i class="bi bi-arrow-down-circle"></i> Receipt</h4>
+        <a href="{{ url_for('receipts') }}" class="dashboard-card-button">
+            {{ kpis.pending_receipts }} to receive
+        </a>
+        <div class="dashboard-stats">
+            <div class="dashboard-stat">
+                <div class="dashboard-stat-label">Late</div>
+                <div class="dashboard-stat-value">1</div>
+            </div>
+            <div class="dashboard-stat">
+                <div class="dashboard-stat-label">Operations</div>
+                <div class="dashboard-stat-value">{{ kpis.pending_receipts }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivery Card -->
+    <div class="dashboard-card">
+        <h4><i class="bi bi-arrow-up-circle"></i> Delivery</h4>
+        <a href="{{ url_for('deliveries') }}" class="dashboard-card-button">
+            {{ kpis.pending_deliveries }} to deliver
+        </a>
+        <div class="dashboard-stats">
+            <div class="dashboard-stat">
+                <div class="dashboard-stat-label">Late</div>
+                <div class="dashboard-stat-value">1</div>
+            </div>
+            <div class="dashboard-stat">
+                <div class="dashboard-stat-label">Waiting</div>
+                <div class="dashboard-stat-value">2</div>
+            </div>
+            <div class="dashboard-stat">
+                <div class="dashboard-stat-label">Operations</div>
+                <div class="dashboard-stat-value">{{ kpis.pending_deliveries }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Stats Row -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="card">
+        <div class="card-body">
+            <div style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">Total Products</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #003366;">{{ kpis.total_products }}</div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">Low Stock Items</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #ffc107;">{{ kpis.low_stock_items }}</div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">Out of Stock</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #dc3545;">{{ kpis.out_of_stock_items }}</div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">Transfers</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #003366;">{{ kpis.scheduled_transfers }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Low Stock Products & Recent Activities -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
+    <!-- Low Stock Products -->
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="bi bi-exclamation-triangle"></i> Low Stock Products</h5>
+        </div>
+        <div class="card-body">
+            {% if low_stock_products %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Stock</th>
+                            <th>Min</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in low_stock_products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td class="text-danger" style="font-weight: 600;">{{ product.total_stock }}</td>
+                            <td>{{ product.min_stock }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No low stock items</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Recent Activities -->
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="bi bi-clock-history"></i> Recent Activities</h5>
+        </div>
+        <div class="card-body">
+            <h6 style="color: #003366; font-weight: 600; margin-bottom: 1rem;">Recent Receipts</h6>
+            <ul style="list-style: none; padding: 0; margin-bottom: 1.5rem;">
+                {% for receipt in recent_receipts %}
+                <li style="padding: 0.5rem 0; border-bottom: 1px solid #e0e0e0;">
+                    <a href="{{ url_for('receipt_detail', id=receipt.id) }}" style="color: #003366; text-decoration: none; font-weight: 500;">{{ receipt.receipt_number }}</a>
+                    <span style="color: #999; font-size: 0.85rem; margin-left: 0.5rem;">{{ receipt.state }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            <h6 style="color: #003366; font-weight: 600; margin-bottom: 1rem;">Recent Deliveries</h6>
+            <ul style="list-style: none; padding: 0;">
+                {% for delivery in recent_deliveries %}
+                <li style="padding: 0.5rem 0; border-bottom: 1px solid #e0e0e0;">
+                    <a href="{{ url_for('delivery_detail', id=delivery.id) }}" style="color: #003366; text-decoration: none; font-weight: 500;">{{ delivery.delivery_number }}</a>
+                    <span style="color: #999; font-size: 0.85rem; margin-left: 0.5rem;">{{ delivery.state }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

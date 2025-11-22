@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_stockmaster_dashboard" model="ir.ui.view">
+        <field name="name">StockMaster Dashboard</field>
+        <field name="model">stockmaster.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Dashboard">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_stockmaster_product)d" type="action" class="oe_stat_button" icon="fa-cubes">
+                            <field name="total_products" widget="statinfo" string="Total Products"/>
+                        </button>
+                        <button name="%(action_stockmaster_product)d" type="action" class="oe_stat_button" icon="fa-exclamation-triangle" context="{'search_default_low_stock': 1}">
+                            <field name="low_stock_items" widget="statinfo" string="Low Stock"/>
+                        </button>
+                        <button name="%(action_stockmaster_product)d" type="action" class="oe_stat_button" icon="fa-times-circle" context="{'search_default_out_of_stock': 1}">
+                            <field name="out_of_stock_items" widget="statinfo" string="Out of Stock"/>
+                        </button>
+                        <button name="%(action_stockmaster_receipt)d" type="action" class="oe_stat_button" icon="fa-arrow-down" context="{'search_default_pending': 1}">
+                            <field name="pending_receipts" widget="statinfo" string="Pending Receipts"/>
+                        </button>
+                        <button name="%(action_stockmaster_delivery)d" type="action" class="oe_stat_button" icon="fa-arrow-up" context="{'search_default_pending': 1}">
+                            <field name="pending_deliveries" widget="statinfo" string="Pending Deliveries"/>
+                        </button>
+                        <button name="%(action_stockmaster_transfer)d" type="action" class="oe_stat_button" icon="fa-exchange" context="{'search_default_scheduled': 1}">
+                            <field name="scheduled_transfers" widget="statinfo" string="Scheduled Transfers"/>
+                        </button>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="total_products"/>
+                            <field name="low_stock_items"/>
+                            <field name="out_of_stock_items"/>
+                        </group>
+                        <group>
+                            <field name="pending_receipts"/>
+                            <field name="pending_deliveries"/>
+                            <field name="scheduled_transfers"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard</field>
+        <field name="res_model">stockmaster.dashboard</field>
+        <field name="view_mode">form,kanban</field>
+        <field name="target">current</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Welcome to StockMaster Dashboard!
+            </p>
+            <p>
+                Monitor your inventory operations at a glance.
+            </p>
+        </field>
+    </record>
+
+    <!-- Dashboard Kanban View -->
+    <record id="view_dashboard_kanban" model="ir.ui.view">
+        <field name="name">Dashboard Kanban</field>
+        <field name="model">stockmaster.dashboard</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard">
+                <field name="id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="text-center">
+                                            <h3><field name="total_products"/></h3>
+                                            <span>Total Products</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="text-center">
+                                            <h3 class="text-warning"><field name="low_stock_items"/></h3>
+                                            <span>Low Stock</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="text-center">
+                                            <h3 class="text-danger"><field name="out_of_stock_items"/></h3>
+                                            <span>Out of Stock</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-4">
+                                        <div class="text-center">
+                                            <h4><field name="pending_receipts"/></h4>
+                                            <span>Pending Receipts</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="text-center">
+                                            <h4><field name="pending_deliveries"/></h4>
+                                            <span>Pending Deliveries</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="text-center">
+                                            <h4><field name="scheduled_transfers"/></h4>
+                                            <span>Scheduled Transfers</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+</odoo>
+

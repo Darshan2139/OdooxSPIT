@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_stockmaster_root" name="StockMaster" sequence="10" web_icon="stockmaster,static/description/icon.png"/>
+
+    <!-- Dashboard -->
+    <menuitem id="menu_stockmaster_dashboard" name="Dashboard" parent="menu_stockmaster_root" action="action_dashboard" sequence="1"/>
+
+    <!-- Products -->
+    <menuitem id="menu_stockmaster_products" name="Products" parent="menu_stockmaster_root" action="action_stockmaster_product" sequence="2"/>
+
+    <!-- Operations -->
+    <menuitem id="menu_stockmaster_operations" name="Operations" parent="menu_stockmaster_root" sequence="3"/>
+    <menuitem id="menu_stockmaster_receipts" name="Receipts" parent="menu_stockmaster_operations" action="action_stockmaster_receipt" sequence="1"/>
+    <menuitem id="menu_stockmaster_deliveries" name="Delivery Orders" parent="menu_stockmaster_operations" action="action_stockmaster_delivery" sequence="2"/>
+    <menuitem id="menu_stockmaster_transfers" name="Internal Transfers" parent="menu_stockmaster_operations" action="action_stockmaster_transfer" sequence="3"/>
+    <menuitem id="menu_stockmaster_adjustments" name="Stock Adjustments" parent="menu_stockmaster_operations" action="action_stockmaster_adjustment" sequence="4"/>
+
+    <!-- Reports -->
+    <menuitem id="menu_stockmaster_reports" name="Reports" parent="menu_stockmaster_root" sequence="4"/>
+    <menuitem id="menu_stockmaster_ledger" name="Stock Ledger" parent="menu_stockmaster_reports" action="action_stockmaster_stock_ledger" sequence="1"/>
+    <menuitem id="menu_stockmaster_move_history" name="Move History" parent="menu_stockmaster_reports" action="action_stockmaster_stock_move" sequence="2"/>
+
+    <!-- Settings -->
+    <menuitem id="menu_stockmaster_settings" name="Settings" parent="menu_stockmaster_root" sequence="99"/>
+    <menuitem id="menu_stockmaster_warehouses" name="Warehouses" parent="menu_stockmaster_settings" action="action_stockmaster_warehouse" sequence="1"/>
+</odoo>
+

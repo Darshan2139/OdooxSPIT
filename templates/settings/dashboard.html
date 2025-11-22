@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - StockMaster{% endblock %}
+
+{% block content %}
+<h2 style="color: #003366; font-weight: 600; margin-bottom: 2rem;">
+    <i class="bi bi-gear"></i> Settings
+</h2>
+
+<!-- Settings Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    
+    <!-- Warehouses Card -->
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
+                <i class="bi bi-building" style="font-size: 2rem; color: #003366; margin-right: 1rem;"></i>
+                <div>
+                    <h5 style="color: #003366; font-weight: 600; margin: 0;">Warehouses</h5>
+                    <p style="color: #999; margin: 0; font-size: 0.9rem;">{{ warehouses_count }} warehouse(s)</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <a href="{{ url_for('warehouses') }}" class="btn btn-primary" style="flex: 1; min-width: 120px;">
+                    <i class="bi bi-list"></i> View All
+                </a>
+                <a href="{{ url_for('warehouse_create') }}" class="btn btn-outline-primary" style="flex: 1; min-width: 100px;">
+                    <i class="bi bi-plus-circle"></i> Create
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Locations Card -->
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
+                <i class="bi bi-geo-alt" style="font-size: 2rem; color: #003366; margin-right: 1rem;"></i>
+                <div>
+                    <h5 style="color: #003366; font-weight: 600; margin: 0;">Locations</h5>
+                    <p style="color: #999; margin: 0; font-size: 0.9rem;">{{ locations_count }} location(s)</p>
+                </div>
+            </div>
+            <a href="{{ url_for('warehouses') }}" class="btn btn-primary" style="display: block; width: 100%; margin-bottom: 1rem;">
+                <i class="bi bi-list"></i> View All
+            </a>
+            <p style="color: #999; font-size: 0.85rem; margin: 0;">Select a warehouse to manage locations</p>
+        </div>
+    </div>
+
+    <!-- Categories Card (Inventory Manager Only) -->
+    {% if is_inventory_manager %}
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
+                <i class="bi bi-tags" style="font-size: 2rem; color: #003366; margin-right: 1rem;"></i>
+                <div>
+                    <h5 style="color: #003366; font-weight: 600; margin: 0;">Categories</h5>
+                    <p style="color: #999; margin: 0; font-size: 0.9rem;">{{ categories_count }} categor(ies)</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <a href="{{ url_for('categories') }}" class="btn btn-primary" style="flex: 1; min-width: 120px;">
+                    <i class="bi bi-list"></i> View All
+                </a>
+                <a href="{{ url_for('category_create') }}" class="btn btn-outline-primary" style="flex: 1; min-width: 100px;">
+                    <i class="bi bi-plus-circle"></i> Create
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Partners Card (Inventory Manager Only) -->
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
+                <i class="bi bi-people" style="font-size: 2rem; color: #003366; margin-right: 1rem;"></i>
+                <div>
+                    <h5 style="color: #003366; font-weight: 600; margin: 0;">Partners</h5>
+                    <p style="color: #999; margin: 0; font-size: 0.9rem;">{{ partners_count }} partner(s)</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <a href="{{ url_for('partners') }}" class="btn btn-primary" style="flex: 1; min-width: 120px;">
+                    <i class="bi bi-list"></i> View All
+                </a>
+                <a href="{{ url_for('partner_create') }}" class="btn btn-outline-primary" style="flex: 1; min-width: 100px;">
+                    <i class="bi bi-plus-circle"></i> Create
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Restricted Message for Staff -->
+    <div class="card" style="background-color: #f9f9f9; border: 1px solid #e0e0e0;">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                <i class="bi bi-lock" style="font-size: 2rem; color: #999; margin-right: 1rem;"></i>
+                <div>
+                    <h5 style="color: #999; font-weight: 600; margin: 0;">Categories</h5>
+                    <p style="color: #999; margin: 0; font-size: 0.9rem;">Inventory Manager Only</p>
+                </div>
+            </div>
+            <p style="color: #999; font-size: 0.85rem; margin: 0;">You need Inventory Manager role to access this feature.</p>
+        </div>
+    </div>
+
+    <div class="card" style="background-color: #f9f9f9; border: 1px solid #e0e0e0;">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                <i class="bi bi-lock" style="font-size: 2rem; color: #999; margin-right: 1rem;"></i>
+                <div>
+                    <h5 style="color: #999; font-weight: 600; margin: 0;">Partners</h5>
+                    <p style="color: #999; margin: 0; font-size: 0.9rem;">Inventory Manager Only</p>
+                </div>
+            </div>
+            <p style="color: #999; font-size: 0.85rem; margin: 0;">You need Inventory Manager role to access this feature.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Info Section -->
+<div class="card" style="background-color: #f0f8f4; border: 1px solid #c3e6cb;">
+    <div class="card-body">
+        <h5 style="color: #003366; font-weight: 600; margin-bottom: 1rem;">
+            <i class="bi bi-info-circle"></i> Settings Overview
+        </h5>
+        <ul style="margin: 0; padding-left: 1.5rem; color: #333;">
+            <li><strong>Warehouses:</strong> Manage your inventory warehouses and their details</li>
+            <li><strong>Locations:</strong> Manage storage locations within each warehouse</li>
+            <li><strong>Categories:</strong> Organize products into categories (Inventory Manager only)</li>
+            <li><strong>Partners:</strong> Manage suppliers and customers (Inventory Manager only)</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

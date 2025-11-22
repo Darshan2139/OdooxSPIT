@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial; padding:20px;">
+  <h2>⚠ Low Stock Alert</h2>
+
+  <ul>
+    <li><strong>Product:</strong> {{ productName }}</li>
+    <li><strong>Current Stock:</strong> {{ currentStock }}</li>
+    <li><strong>Reorder Level:</strong> {{ reorderLevel }}</li>
+    <li><strong>Warehouse:</strong> {{ warehouse }}</li>
+  </ul>
+
+  <p>Please restock this item soon.</p>
+
+  <p>Regards,<br>StockMaster System</p>
+</body>
+</html>

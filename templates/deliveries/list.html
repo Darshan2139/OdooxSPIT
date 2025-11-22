@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Deliveries - StockMaster{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2 style="color: #003366; font-weight: 600; margin: 0;"><i class="bi bi-arrow-up-circle"></i> Deliveries</h2>
+    <a href="{{ url_for('delivery_create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> NEW
+    </a>
+</div>
+
+<!-- Status Filters -->
+<div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+    <a href="{{ url_for('deliveries') }}" class="btn btn-sm {% if not state %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+    <a href="{{ url_for('deliveries', state='draft') }}" class="btn btn-sm {% if state == 'draft' %}btn-primary{% else %}btn-outline-primary{% endif %}">Draft</a>
+    <a href="{{ url_for('deliveries', state='picking') }}" class="btn btn-sm {% if state == 'picking' %}btn-primary{% else %}btn-outline-primary{% endif %}">Picking</a>
+    <a href="{{ url_for('deliveries', state='packing') }}" class="btn btn-sm {% if state == 'packing' %}btn-primary{% else %}btn-outline-primary{% endif %}">Packing</a>
+    <a href="{{ url_for('deliveries', state='ready') }}" class="btn btn-sm {% if state == 'ready' %}btn-primary{% else %}btn-outline-primary{% endif %}">Ready</a>
+    <a href="{{ url_for('deliveries', state='done') }}" class="btn btn-sm {% if state == 'done' %}btn-primary{% else %}btn-outline-primary{% endif %}">Done</a>
+</div>
+
+<!-- Deliveries Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Date</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Contact</th>
+                        <th>Schedule Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for delivery in deliveries %}
+                    <tr>
+                        <td style="font-weight: 600; color: #003366;">
+                            <a href="{{ url_for('delivery_detail', id=delivery.id) }}" style="color: #003366; text-decoration: none;">
+                                {{ delivery.delivery_number }}
+                            </a>
+                        </td>
+                        <td>{{ delivery.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ delivery.warehouse.name }}</td>
+                        <td>{{ delivery.customer.name if delivery.customer else '-' }}</td>
+                        <td>{{ delivery.customer.name if delivery.customer else '-' }}</td>
+                        <td>{{ delivery.date.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <span class="badge" style="background-color: {% if delivery.state == 'done' %}#28a745{% elif delivery.state == 'draft' %}#6c757d{% elif delivery.state in ['picking', 'packing', 'ready'] %}#ffc107{% else %}#dc3545{% endif %}; color: {% if delivery.state == 'done' or delivery.state == 'draft' or delivery.state in ['picking', 'packing', 'ready'] %}{% if delivery.state == 'draft' or delivery.state == 'picking' or delivery.state == 'packing' or delivery.state == 'ready' %}{% if delivery.state == 'draft' %}#333{% else %}white{% endif %}{% else %}white{% endif %}{% else %}white{% endif %};">
+                                {{ delivery.state }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('delivery_detail', id=delivery.id) }}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted" style="padding: 2rem;">No deliveries found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Transfer Form View -->
+    <record id="view_stockmaster_transfer_form" model="ir.ui.view">
+        <field name="name">stockmaster.transfer.form</field>
+        <field name="model">stockmaster.transfer</field>
+        <field name="arch" type="xml">
+            <form string="Internal Transfer">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_ready" string="Mark Ready" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'waiting')]}"/>
+                    <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'ready')]}"/>
+                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ['done', 'canceled'])]}"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', 'not in', ['waiting', 'canceled'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,waiting,ready,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="date"/>
+                            <field name="user_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="source_location_id" domain="[('usage', '=', 'internal')]"/>
+                            <field name="destination_location_id" domain="[('usage', '=', 'internal')]"/>
+                            <field name="total_products" readonly="1"/>
+                            <field name="total_quantity" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Products" name="products">
+                            <field name="transfer_line_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="product_id" options="{'no_create': True}"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Add any notes about this transfer..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Transfer List View -->
+    <record id="view_stockmaster_transfer_tree" model="ir.ui.view">
+        <field name="name">stockmaster.transfer.tree</field>
+        <field name="model">stockmaster.transfer</field>
+        <field name="arch" type="xml">
+            <tree string="Transfers" decoration-info="state == 'draft'" decoration-warning="state in ['waiting', 'ready']" decoration-success="state == 'done'" decoration-muted="state == 'canceled'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="source_location_id"/>
+                <field name="destination_location_id"/>
+                <field name="total_products"/>
+                <field name="total_quantity"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state in ['waiting', 'ready']" decoration-success="state == 'done'"/>
+                <field name="user_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Transfer Search View -->
+    <record id="view_stockmaster_transfer_search" model="ir.ui.view">
+        <field name="name">stockmaster.transfer.search</field>
+        <field name="model">stockmaster.transfer</field>
+        <field name="arch" type="xml">
+            <search string="Search Transfers">
+                <field name="name"/>
+                <field name="source_location_id"/>
+                <field name="destination_location_id"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Waiting" name="waiting" domain="[('state', '=', 'waiting')]"/>
+                <filter string="Ready" name="ready" domain="[('state', '=', 'ready')]"/>
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                <filter string="Scheduled" name="scheduled" domain="[('state', 'in', ['draft', 'waiting', 'ready'])]"/>
+                <separator/>
+                <filter string="Today" name="today" domain="[('date', '>=', datetime.datetime.now().replace(hour=0, minute=0, second=0))]"/>
+                <filter string="This Week" name="this_week" domain="[('date', '>=', (datetime.datetime.now() - datetime.timedelta(days=7)))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Source Location" name="group_source" context="{'group_by': 'source_location_id'}"/>
+                    <filter string="Destination Location" name="group_dest" context="{'group_by': 'destination_location_id'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Transfer Action -->
+    <record id="action_stockmaster_transfer" model="ir.actions.act_window">
+        <field name="name">Internal Transfers</field>
+        <field name="res_model">stockmaster.transfer</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_stockmaster_transfer_search"/>
+        <field name="context">{'search_default_scheduled': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first transfer!
+            </p>
+            <p>
+                Internal transfers move stock between locations within your organization.
+            </p>
+        </field>
+    </record>
+</odoo>
+

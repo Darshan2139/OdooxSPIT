@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Login - StockMaster{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-wrapper" style="max-width: 450px; margin: 0 auto;">
+        <!-- Login Card -->
+        <div class="auth-card">
+            <div class="auth-logo">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <h3 class="auth-title">Welcome Back</h3>
+            <p style="text-align: center; color: #666; margin-bottom: 2rem; font-size: 0.95rem;">Sign in to your StockMaster account</p>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div style="background-color: {% if category == 'error' %}#f8d7da{% elif category == 'success' %}#d4edda{% else %}#d1ecf1{% endif %}; border: 1px solid {% if category == 'error' %}#f5c6cb{% elif category == 'success' %}#c3e6cb{% else %}#bee5eb{% endif %}; color: {% if category == 'error' %}#721c24{% elif category == 'success' %}#155724{% else %}#0c5460{% endif %}; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST">
+                <div class="auth-form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="auth-form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="auth-button">SIGN IN</button>
+            </form>
+            
+            <div class="auth-links" style="margin-top: 1.5rem; text-align: center;">
+                <p style="color: #666; margin-bottom: 1rem; font-size: 0.9rem;">
+                    <a href="{{ url_for('forgot_password') }}" style="color: #003366; text-decoration: none; font-weight: 500;">Forgot Password?</a>
+                </p>
+                <p style="color: #666; font-size: 0.9rem;">
+                    Don't have an account? <a href="{{ url_for('signup') }}" style="color: #003366; text-decoration: none; font-weight: 600;">Sign Up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

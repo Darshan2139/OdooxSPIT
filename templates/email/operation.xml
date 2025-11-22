@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family:Arial;padding:20px;">
+  <h2>Operation Update: {{ type }}</h2>
+
+  <ul>
+    <li><strong>Operation ID:</strong> {{ operationId }}</li>
+    <li><strong>Type:</strong> {{ type }}</li>
+    <li><strong>Status:</strong> {{ status }}</li>
+    <li><strong>Date:</strong> {{ date }}</li>
+  </ul>
+
+  <h3>Items:</h3>
+  <table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse;">
+    <tr>
+      <th>Product</th>
+      <th>Quantity</th>
+    </tr>
+    {% for item in lines %}
+    <tr>
+      <td>{{ item.product }}</td>
+      <td>{{ item.qty }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <p>Regards,<br>StockMaster Team</p>
+</body>
+</html>

@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Move History - StockMaster{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2 style="color: #003366; font-weight: 600; margin: 0;"><i class="bi bi-arrow-left-right"></i> Move History</h2>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+        <button id="listViewBtn" class="btn btn-primary" style="padding: 0.5rem 1rem;">
+            <i class="bi bi-list-ul"></i> List
+        </button>
+        <button id="kanbanViewBtn" class="btn btn-outline-primary" style="padding: 0.5rem 1rem;">
+            <i class="bi bi-kanban"></i> Kanban
+        </button>
+        <span class="nav-item-icon" title="Search" style="margin-left: 0;">
+            <i class="bi bi-search"></i>
+        </span>
+    </div>
+</div>
+
+<!-- Filters -->
+<form method="GET" class="mb-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+    <select class="form-select" name="product_id">
+        <option value="">All Products</option>
+        {% for product in products %}
+        <option value="{{ product.id }}" {% if product_id == product.id %}selected{% endif %}>
+            {{ product.name }}
+        </option>
+        {% endfor %}
+    </select>
+    <select class="form-select" name="location_id">
+        <option value="">All Locations</option>
+        {% for location in locations %}
+        <option value="{{ location.id }}" {% if location_id == location.id %}selected{% endif %}>
+            {{ location.name }}
+        </option>
+        {% endfor %}
+    </select>
+    <select class="form-select" name="operation_type">
+        <option value="">All Operations</option>
+        <option value="receipt" {% if operation_type == 'receipt' %}selected{% endif %}>Receipts (IN)</option>
+        <option value="delivery" {% if operation_type == 'delivery' %}selected{% endif %}>Deliveries (OUT)</option>
+        <option value="transfer_in" {% if operation_type == 'transfer_in' %}selected{% endif %}>Transfer In</option>
+        <option value="transfer_out" {% if operation_type == 'transfer_out' %}selected{% endif %}>Transfer Out</option>
+        <option value="adjustment" {% if operation_type == 'adjustment' %}selected{% endif %}>Adjustments</option>
+    </select>
+    <div style="display: flex; gap: 0.5rem;">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="{{ url_for('ledger') }}" class="btn btn-outline-primary">Clear</a>
+    </div>
+</form>
+
+<!-- List View -->
+<div id="listView" class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Date</th>
+                        <th>Product</th>
+                        <th>Location</th>
+                        <th>Operation</th>
+                        <th>Quantity</th>
+                        <th>Balance</th>
+                        <th>Contact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                    <tr style="{% if entry.operation_type in ['receipt', 'transfer_in'] %}background-color: #f0f8f4;{% elif entry.operation_type in ['delivery', 'transfer_out'] %}background-color: #fef5f5;{% endif %}">
+                        <td style="font-weight: 600; color: #003366;">{{ entry.reference }}</td>
+                        <td>{{ entry.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ entry.product.name }}</td>
+                        <td>{{ entry.location.name }}</td>
+                        <td>
+                            {% if entry.operation_type in ['receipt', 'transfer_in'] %}
+                            <span class="badge" style="background-color: #28a745; color: white;">IN</span>
+                            {% elif entry.operation_type in ['delivery', 'transfer_out'] %}
+                            <span class="badge" style="background-color: #dc3545; color: white;">OUT</span>
+                            {% else %}
+                            <span class="badge" style="background-color: #ffc107; color: #333;">{{ entry.operation_type }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.quantity_in > 0 %}
+                            <span style="color: #28a745; font-weight: 600;">+{{ entry.quantity_in }}</span>
+                            {% elif entry.quantity_out > 0 %}
+                            <span style="color: #dc3545; font-weight: 600;">-{{ entry.quantity_out }}</span>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td style="font-weight: 600;">{{ entry.balance }}</td>
+                        <td>{{ entry.partner.name if entry.partner else '-' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted" style="padding: 2rem;">No move history found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Kanban View (Hidden by default) -->
+<div id="kanbanView" style="display: none;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        <!-- IN Column -->
+        <div class="card">
+            <div class="card-header" style="background-color: #28a745; color: white;">
+                <h5 style="margin: 0;">IN Movements</h5>
+            </div>
+            <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                {% for entry in entries %}
+                    {% if entry.operation_type in ['receipt', 'transfer_in'] %}
+                    <div class="card" style="margin-bottom: 1rem; border-left: 4px solid #28a745;">
+                        <div class="card-body" style="padding: 1rem;">
+                            <div style="font-weight: 600; color: #003366; margin-bottom: 0.5rem;">{{ entry.reference }}</div>
+                            <div style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">{{ entry.product.name }}</div>
+                            <div style="font-size: 1.25rem; font-weight: 700; color: #28a745;">+{{ entry.quantity_in }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- OUT Column -->
+        <div class="card">
+            <div class="card-header" style="background-color: #dc3545; color: white;">
+                <h5 style="margin: 0;">OUT Movements</h5>
+            </div>
+            <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                {% for entry in entries %}
+                    {% if entry.operation_type in ['delivery', 'transfer_out'] %}
+                    <div class="card" style="margin-bottom: 1rem; border-left: 4px solid #dc3545;">
+                        <div class="card-body" style="padding: 1rem;">
+                            <div style="font-weight: 600; color: #003366; margin-bottom: 0.5rem;">{{ entry.reference }}</div>
+                            <div style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">{{ entry.product.name }}</div>
+                            <div style="font-size: 1.25rem; font-weight: 700; color: #dc3545;">-{{ entry.quantity_out }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
