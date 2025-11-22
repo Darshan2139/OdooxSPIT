@@ -81,7 +81,7 @@ class Product(db.Model):
     # Pricing
     cost_price = db.Column(db.Float, default=0.0)
     sale_price = db.Column(db.Float, default=0.0)
-    currency = db.Column(db.String(8), default='USD')
+    currency = db.Column(db.String(8), default='INR')
     active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     

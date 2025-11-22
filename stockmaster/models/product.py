@@ -18,7 +18,7 @@ class StockMasterProduct(models.Model):
     # Pricing
     cost_price = fields.Monetary(string='Cost Price', currency_field='currency_id', default=0.0)
     sale_price = fields.Monetary(string='Sale Price', currency_field='currency_id', default=0.0)
-    currency_id = fields.Many2one('res.currency', string='Currency', required=True, default=lambda self: self.env.ref('base.USD'))
+    currency_id = fields.Many2one('res.currency', string='Currency', required=True, default=lambda self: self.env.ref('base.INR'))
     min_stock = fields.Float(string='Minimum Stock Level', default=0.0, help='Alert when stock falls below this level')
     max_stock = fields.Float(string='Maximum Stock Level', default=0.0)
     reorder_qty = fields.Float(string='Reorder Quantity', default=0.0, help='Suggested quantity to reorder')
